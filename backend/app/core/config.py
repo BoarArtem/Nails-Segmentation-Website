@@ -2,6 +2,7 @@
 from functools import lru_cache
 from pathlib import Path
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Resolves to the `backend/` project root regardless of the process cwd
@@ -34,6 +35,18 @@ class Settings(BaseSettings):
     MODEL_PATH: str = "app/ml/weights/best.pt"
     MODEL_CONFIDENCE_THRESHOLD: float = 0.25
     MAX_UPLOAD_SIZE_BYTES: int = 10 * 1024 * 1024  # 10 MB
+
+    @field_validator("DATABASE_URL")
+    @classmethod
+    def _normalize_database_url(cls, value: str) -> str:
+        """Rewrite `postgres://`/`postgresql://` URLs (as provided by most hosting
+        platforms, e.g. Railway) to explicitly use the psycopg3 driver, which is
+        what's installed (`psycopg[binary]`), not the default psycopg2."""
+        if value.startswith("postgres://"):
+            return "postgresql+psycopg://" + value[len("postgres://") :]
+        if value.startswith("postgresql://"):
+            return "postgresql+psycopg://" + value[len("postgresql://") :]
+        return value
 
     @property
     def MODEL_PATH_RESOLVED(self) -> Path:

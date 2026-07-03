@@ -7,5 +7,6 @@ __pycache__/
 .coverage
 htmlcov/
 
-# Model weights are large binaries; track them outside git (e.g. LFS, object storage).
-app/ml/weights/*.pt
+# Model weights (app/ml/weights/best.pt) are tracked directly in git: Railway
+# builds the Docker image straight from this repo, so the weights must be
+# present in the checkout. If the model grows much larger, move to Git LFS.
