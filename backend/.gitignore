@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+.pytest_cache/
+*.egg-info/
+.coverage
+htmlcov/
+
+# Model weights are large binaries; track them outside git (e.g. LFS, object storage).
+app/ml/weights/*.pt
